@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, 'models', 'parkinsons_xgboost_model.joblib')
+MODEL_PATH = os.path.join(BASE_DIR, 'models', 'parkinsons_rf_model.joblib')
 
 
 def load_model():
@@ -19,9 +19,5 @@ def load_model():
         return None
 
 def predict_from_audio(model, features: np.ndarray):
-    """
-    Predict Parkinson's status using the trained model and input features.
-    Returns 0 (Healthy) or 1 (Parkinson's).
-    """
-    prediction = model.predict(features)
-    return int(prediction[0])
+    probability = model.predict_proba(features)[0][1]  # Class 1: Parkinson's
+    return probability, f"{probability * 100:.2f}%"
