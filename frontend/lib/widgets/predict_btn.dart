@@ -6,8 +6,7 @@ class Predict extends StatefulWidget {
   final String? filePath;
   final Function(String) onResult;
 
-  const Predict({Key? key, required this.filePath, required this.onResult})
-    : super(key: key);
+  const Predict({super.key, required this.filePath, required this.onResult});
 
   @override
   State<Predict> createState() => _predictState();

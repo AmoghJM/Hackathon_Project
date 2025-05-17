@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,10 +9,10 @@ class RecordButton extends StatefulWidget {
   final Function(bool) onRecordingStateChanged;
 
   const RecordButton({
-    Key? key,
+    super.key,
     required this.onStop,
     required this.onRecordingStateChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<RecordButton> createState() => _RecordButtonState();
@@ -20,13 +21,14 @@ class RecordButton extends StatefulWidget {
 class _RecordButtonState extends State<RecordButton> {
   final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
   bool _isRecording = false;
-  bool isPlaying = false;
   String? _filePath;
+  late final RecorderController _waveformController;
 
   @override
   void initState() {
     super.initState();
     _initializeRecorder();
+    _waveformController = RecorderController();
   }
 
   Future<void> _initializeRecorder() async {
@@ -41,7 +43,12 @@ class _RecordButtonState extends State<RecordButton> {
 
   Future<void> _startRecording() async {
     _filePath = await _getFilePath();
-    await _recorder.startRecorder(toFile: _filePath, codec: Codec.pcm16WAV);
+    await _recorder.startRecorder(
+      toFile: _filePath,
+      codec: Codec.pcm16WAV,
+      audioSource: AudioSource.microphone,
+    );
+    await _waveformController.record(); // <-- corrected method name
     widget.onRecordingStateChanged(true);
     setState(() {
       _isRecording = true;
@@ -50,12 +57,13 @@ class _RecordButtonState extends State<RecordButton> {
 
   Future<void> _stopRecording() async {
     await _recorder.stopRecorder();
+    await _waveformController.stop(); // <-- await stop
     setState(() {
       _isRecording = false;
     });
 
     if (_filePath != null) {
-      widget.onStop(_filePath!); // Send to parent
+      widget.onStop(_filePath!);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Recording saved: $_filePath')));
@@ -65,44 +73,48 @@ class _RecordButtonState extends State<RecordButton> {
 
   Future<void> _toggleRecording() async {
     if (!_isRecording) {
-      _filePath = await _getFilePath();
-      await _recorder.startRecorder(toFile: _filePath, codec: Codec.pcm16WAV);
-      widget.onRecordingStateChanged(true); // ⬅ notify parent
+      await _startRecording();
     } else {
-      await _recorder.stopRecorder();
-      if (_filePath != null) {
-        widget.onStop(_filePath!);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Recording saved: $_filePath')));
-      }
-      widget.onRecordingStateChanged(false); // ⬅ notify parent
+      await _stopRecording();
     }
-
-    setState(() {
-      _isRecording = !_isRecording;
-    });
   }
 
   @override
   void dispose() {
+    _waveformController.dispose();
     _recorder.closeRecorder();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
       children: [
-        ElevatedButton(
-          onPressed: _toggleRecording,
-          child: Icon(_isRecording ? Icons.stop : Icons.mic),
-          style: ElevatedButton.styleFrom(
-            shape: const CircleBorder(),
-            padding: const EdgeInsets.all(20),
-            backgroundColor: _isRecording ? Colors.red : Colors.green,
+        if (_isRecording)
+          AudioWaveforms(
+            size: const Size(double.infinity, 50),
+            recorderController: _waveformController,
+            enableGesture: false,
+            waveStyle: const WaveformStyle(
+              waveColor: Colors.blueAccent,
+              extendWaveform: true,
+              showMiddleLine: false,
+            ),
           ),
+        const SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: _toggleRecording,
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                padding: const EdgeInsets.all(20),
+                backgroundColor: _isRecording ? Colors.red : Colors.green,
+              ),
+              child: Icon(_isRecording ? Icons.stop : Icons.mic),
+            ),
+          ],
         ),
       ],
     );
