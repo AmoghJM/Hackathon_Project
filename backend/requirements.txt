@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+python-multipart
+numpy
+scipy
+librosa  # for audio processing when implemented
+scikit-learn  # or tensorflow/torch depending on your model
