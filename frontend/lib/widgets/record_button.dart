@@ -5,8 +5,13 @@ import 'package:path_provider/path_provider.dart';
 
 class RecordButton extends StatefulWidget {
   final Function(String) onStop;
+  final Function(bool) onRecordingStateChanged;
 
-  const RecordButton({Key? key, required this.onStop}) : super(key: key);
+  const RecordButton({
+    Key? key,
+    required this.onStop,
+    required this.onRecordingStateChanged,
+  }) : super(key: key);
 
   @override
   State<RecordButton> createState() => _RecordButtonState();
@@ -37,6 +42,7 @@ class _RecordButtonState extends State<RecordButton> {
   Future<void> _startRecording() async {
     _filePath = await _getFilePath();
     await _recorder.startRecorder(toFile: _filePath, codec: Codec.pcm16WAV);
+    widget.onRecordingStateChanged(true);
     setState(() {
       _isRecording = true;
     });
@@ -54,14 +60,28 @@ class _RecordButtonState extends State<RecordButton> {
         context,
       ).showSnackBar(SnackBar(content: Text('Recording saved: $_filePath')));
     }
+    widget.onRecordingStateChanged(false);
   }
 
   Future<void> _toggleRecording() async {
-    if (_isRecording) {
-      await _stopRecording();
+    if (!_isRecording) {
+      _filePath = await _getFilePath();
+      await _recorder.startRecorder(toFile: _filePath, codec: Codec.pcm16WAV);
+      widget.onRecordingStateChanged(true); // ⬅ notify parent
     } else {
-      await _startRecording();
+      await _recorder.stopRecorder();
+      if (_filePath != null) {
+        widget.onStop(_filePath!);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Recording saved: $_filePath')));
+      }
+      widget.onRecordingStateChanged(false); // ⬅ notify parent
     }
+
+    setState(() {
+      _isRecording = !_isRecording;
+    });
   }
 
   @override
@@ -82,20 +102,6 @@ class _RecordButtonState extends State<RecordButton> {
             shape: const CircleBorder(),
             padding: const EdgeInsets.all(20),
             backgroundColor: _isRecording ? Colors.red : Colors.green,
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            // TODO: implement playback if needed
-            setState(() {
-              isPlaying = !isPlaying;
-            });
-          },
-          child: const Icon(Icons.play_arrow, color: Colors.amber),
-          style: ElevatedButton.styleFrom(
-            shape: const CircleBorder(),
-            padding: const EdgeInsets.all(20),
-            backgroundColor: Colors.blue,
           ),
         ),
       ],

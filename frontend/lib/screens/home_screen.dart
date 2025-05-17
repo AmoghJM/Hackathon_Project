@@ -12,19 +12,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isRecording = false;
-  bool isPlaying = false;
   String? filePath;
   String result = "";
 
-  void onRecordingStopped(String path) {
+  void handleRecordingState(bool recording) {
     setState(() {
-      filePath = path;
+      isRecording = recording;
     });
   }
 
-  void onPredictionResult(String prediction) {
+  void handleRecordingStop(String path) {
     setState(() {
-      result = prediction;
+      filePath = path;
     });
   }
 
@@ -43,20 +42,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: 400,
                   height: 400,
                   fit: BoxFit.contain,
-                  repeat: isRecording || isPlaying,
+                  repeat: isRecording, // reacts to HomeScreen's state
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     RecordButton(
-                      onStop: (path) {
-                        onRecordingStopped(path);
-                      },
+                      onStop: handleRecordingStop,
+                      onRecordingStateChanged: handleRecordingState,
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
-                Predict(filePath: filePath, onResult: onPredictionResult),
+                Predict(
+                  filePath: filePath,
+                  onResult: (String prediction) {
+                    setState(() {
+                      result = prediction;
+                    });
+                  },
+                ),
                 const SizedBox(height: 20),
                 Text(result, style: const TextStyle(fontSize: 16)),
               ],
