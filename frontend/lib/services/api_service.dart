@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = 'http://10.0.2.2:8000'; // Change for mobile testing
+  static const String baseUrl = 'http://10.0.2.2:8000'; // For Android Emulator
 
   static Future<String?> sendAudioFile(File audioFile) async {
     try {
@@ -11,7 +11,9 @@ class ApiService {
         'POST',
         Uri.parse('$baseUrl/predict'),
       );
-      request.files.add(await http.MultipartFile.fromPath('file', audioFile.path));
+      request.files.add(
+        await http.MultipartFile.fromPath('file', audioFile.path),
+      );
       var response = await request.send();
 
       if (response.statusCode == 200) {
