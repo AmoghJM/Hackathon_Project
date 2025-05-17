@@ -1,9 +1,12 @@
-import 'dart:io';
+// import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:path_provider/path_provider.dart';
-import '../services/api_service.dart';
+import 'package:lottie/lottie.dart';
+// import 'package:permission_handler/permission_handler.dart';
+// import 'package:path_provider/path_provider.dart';
+// import '../services/api_service.dart';
+import '../widgets/record_button.dart';
+import '../widgets/predict_btn.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,9 +18,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   FlutterSoundRecorder recorder = FlutterSoundRecorder();
   bool isRecording = false;
+  bool isPlaying = false;
   String? filePath;
   String result = "";
-
+  /*
   @override
   void initState() {
     super.initState();
@@ -56,14 +60,44 @@ class _HomeScreenState extends State<HomeScreen> {
     recorder.closeRecorder();
     super.dispose();
   }
-
+*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Parkinson Detection")),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
+        child: Container(
+          color: const Color.fromARGB(255, 253, 170, 62),
+          child: Center(
+            child: Column(
+              children: [
+                Lottie.asset(
+                  'assets/audio_loading.json',
+                  width: 400,
+                  height: 400,
+                  fit: BoxFit.contain,
+                  repeat: isRecording || isPlaying ? true : false,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [const RecordButton()],
+                ),
+                const SizedBox(height: 20),
+                const Predict(),
+                const SizedBox(height: 20),
+                Text(result, style: const TextStyle(fontSize: 16)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+/*
+Column(
           children: [
             ElevatedButton(
               onPressed: isRecording ? stopRecording : startRecording,
@@ -78,7 +112,4 @@ class _HomeScreenState extends State<HomeScreen> {
             Text("Result: $result", style: const TextStyle(fontSize: 16)),
           ],
         ),
-      ),
-    );
-  }
-}
+        */
