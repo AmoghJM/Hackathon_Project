@@ -10,10 +10,10 @@ class Predict extends StatefulWidget {
     : super(key: key);
 
   @override
-  State<Predict> createState() => _predictState();
+  State<Predict> createState() => _PredictState();
 }
 
-class _predictState extends State<Predict> {
+class _PredictState extends State<Predict> {
   bool isLoading = false;
 
   Future<void> sendAudio() async {
@@ -36,10 +36,30 @@ class _predictState extends State<Predict> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: widget.filePath != null && !isLoading ? sendAudio : null,
+      style: ElevatedButton.styleFrom(
+        backgroundColor:
+            widget.filePath != null
+                ? const Color(0xFF00C853) // Brighter Green when enabled
+                : Colors.grey.shade800,
+        // Darker grey when disabled
+        foregroundColor: Colors.red,
+        // Change text color to black
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        elevation: 5,
+        shadowColor: Colors.black.withOpacity(0.5),
+      ),
       child:
           isLoading
-              ? CircularProgressIndicator(color: Colors.white)
-              : const Text("PREDICT"),
+              ? const CircularProgressIndicator(color: Colors.white)
+              : const Text(
+                "PREDICT",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black, // Ensure text is black when enabled
+                ),
+              ),
     );
   }
 }
