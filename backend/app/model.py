@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, 'models', 'parkinsons_xgboost_model.joblib')
+MODEL_PATH = os.path.join(BASE_DIR, 'models', 'best_rf_model.joblib')
 
 
 def load_model():

@@ -6,7 +6,7 @@ import joblib
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SCALER_PATH = os.path.join(BASE_DIR, 'models', 'parkinsons_rf_scaler.joblib')
+SCALER_PATH = os.path.join(BASE_DIR, 'models', 'best_rf_scaler.joblib')
 
 
 # Load the scaler
