@@ -139,10 +139,10 @@ Make sure the tone is not alarming, but informative.
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final text =
+      final rawText =
           data['candidates']?[0]?['content']?['parts']?[0]?['text'] ??
           "No suggestion received.";
-
+      final text = rawText.replaceAll('*', '');
       showDialog(
         context: context,
         builder: (_) {
