@@ -39,3 +39,8 @@ This Flutter application leverages the subtle changes in human voice to provide 
 * *file\_picker:* For allowing users to select audio files from their device.
 * *http:* For making network requests to the backend API.
 * *lottie:* For displaying engaging animations (e.g., during loading).
+
+## ML Models used
+- Random Forest
+- SVM
+- XGBoost
