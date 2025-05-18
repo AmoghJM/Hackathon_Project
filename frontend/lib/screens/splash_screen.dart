@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'home_screen.dart';
+import 'main_home.dart';
 
 class SplashScreen extends StatefulWidget {
   final Duration duration;
@@ -24,7 +25,7 @@ class SplashScreenState extends State<SplashScreen> {
   void _navigateToHome() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      MaterialPageRoute(builder: (context) => const MainHome()),
     );
   }
 

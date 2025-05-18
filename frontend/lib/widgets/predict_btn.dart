@@ -40,7 +40,7 @@ class _PredictState extends State<Predict> {
         backgroundColor:
             widget.filePath != null
                 ? const Color(0xFF00C853) // Brighter Green when enabled
-                : Colors.grey.shade800,
+                : Colors.green,
         // Darker grey when disabled
         foregroundColor: Colors.red,
         // Change text color to black
